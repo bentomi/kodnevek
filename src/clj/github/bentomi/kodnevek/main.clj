@@ -14,7 +14,8 @@
                        :io.pedestal.http/resource-path "public"
                        ::server/main-script "js/main.js"
                        ::game/provider (ig/ref ::game/provider)
-                       ::words/provider (ig/ref ::words/provider)}
+                       ::words/provider (ig/ref ::words/provider)
+                       ::server/event-handler (ig/ref ::game/provider)}
    ::game/provider {::words/provider (ig/ref ::words/provider)}
    ::words/provider {::words/resources {"en" "cn-words-en.txt"
                                         "ru" "cn-words-ru.txt"}}})

@@ -40,8 +40,13 @@
            :test-cljs {:extra-paths ["test/cljs"]}
            :test-cljs-run {:main-opts ["-m" "figwheel.main" "-co" "test.cljs.edn"
                                        "-m" "github.bentomi.kodnevek.test-runner"]}
-           :uberjar {:extra-deps {luchiniatwork/cambada {:mvn/version "1.0.5"}}
-                     :main-opts ["-m" "cambada.uberjar"
-                                 "-m" "github.bentomi.kodnevek.main"]}}
+           :uberjar {:replace-deps {com.github.seancorfield/depstar {:mvn/version "2.0.216"}}
+                     :exec-fn hf.depstar/uberjar
+                     :exec-args {:jar "target/kodnevek.jar"
+                                 :main-class github.bentomi.kodnevek.main
+                                 :compile-ns :all
+                                 :aot true
+                                 :exclude ["github/bentomi/.*~"
+                                           "github/bentomi/.*\\.clj"]}}}
  :mvn/repos {"central" {:url "https://repo1.maven.org/maven2/"}
              "clojars" {:url "https://repo.clojars.org/"}}}

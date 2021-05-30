@@ -16,9 +16,11 @@ table.board td {
     transition: 1s;
     transform-style: preserve-3d;
     transform-origin: center right;
+    cursor: pointer;
 }
 .card.discovered {
     transform: translateX(-100%) rotateY(180deg);
+    cursor: no-drop;
 }
 .card__face {
     position: absolute;
