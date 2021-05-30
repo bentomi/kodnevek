@@ -1,0 +1,3 @@
+{:main github.bentomi.kodnevek.main
+ :output-to "resources/public/js/main.js"
+ :optimizations :advanced}

@@ -1,0 +1,71 @@
+table.board {
+    background-color: cornsilk;
+}
+table.board td {
+    width: 8em;
+    height: 2em;
+    perspective: 600px;
+    text-align: center;
+    line-height: 2em;
+    padding: 0em;
+}
+.card {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    transition: 1s;
+    transform-style: preserve-3d;
+    transform-origin: center right;
+}
+.card.discovered {
+    transform: translateX(-100%) rotateY(180deg);
+}
+.card__face {
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    backface-visibility: hidden;
+}
+.card__face--back {
+    transform: rotateY(180deg);
+}
+table.board td.red {
+    border: 3px solid darkred;
+}
+.card__face--back.red {
+    background-color: darkred;
+}
+table.board td.blue {
+    border: 3px solid navy;
+}
+.card__face--back.blue {
+    background-color: navy;
+}
+table.board td.white {
+    border: 3px solid white;
+}
+.card__face--back.white {
+    background-color: white;
+}
+table.board td.black {
+    border: 3px solid black;
+}
+.card__face--back.black {
+    background-color: black;
+}
+table.board td.clear {
+    border: 3px solid transparent;
+}
+ul.controls {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
+ul.controls li {
+    float: left;
+    display: block;
+    padding: 14px 16px;
+}
+.lang_selector label {
+    padding-right: 2px;
+}
