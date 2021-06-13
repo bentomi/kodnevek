@@ -104,8 +104,9 @@
     (rdom/render [main-panel] root-el)))
 
 (defn init []
-  (ws/connect (str "ws://" (.. js/document -location -host) "/ws")
-              game/handle-event)
+  (let [scheme (if (= "https:" js/location.protocol) "wss" "ws")]
+    (ws/connect (str scheme "://" js/location.host "/ws")
+                game/handle-event))
   (re-frame/dispatch [::retrieve-languages])
   (mount-root))
 
