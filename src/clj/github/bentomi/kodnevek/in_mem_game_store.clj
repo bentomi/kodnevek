@@ -1,4 +1,5 @@
 (ns github.bentomi.kodnevek.in-mem-game-store
+  "An implementation of the `GameStore` interface storing games in memory."
   (:require [integrant.core :as ig]
             [github.bentomi.kodnevek.board :as board]
             [github.bentomi.kodnevek.game-store :as store]

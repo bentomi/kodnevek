@@ -1,4 +1,5 @@
 (ns github.bentomi.kodnevek.server
+  "HTTP server handling the routing."
   (:require [clojure.tools.logging :as log]
             [integrant.core :as ig]
             [jsonista.core :as json]
@@ -15,7 +16,7 @@
   (:import (org.eclipse.jetty.servlet ServletContextHandler)
            (org.eclipse.jetty.server.handler.gzip GzipHandler)))
 
-(defn gzip-configurator [^ServletContextHandler ctx]
+(defn- gzip-configurator [^ServletContextHandler ctx]
   (doto ctx (.setGzipHandler (GzipHandler.))))
 
 (defn- main-page [config app-attrs]

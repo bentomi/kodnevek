@@ -1,4 +1,5 @@
 (ns github.bentomi.kodnevek.game
+  "Game handling logic for the frontend."
   (:require [re-frame.core :as re-frame]
             [github.bentomi.kodnevek.board :as board]
             [github.bentomi.kodnevek.navigation :as navi]

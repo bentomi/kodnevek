@@ -1,4 +1,5 @@
 (ns github.bentomi.kodnevek.game
+  "Game handling logic for the backend."
   (:require [clojure.tools.logging :as log]
             [integrant.core :as ig]
             [github.bentomi.kodnevek.board :as board]
@@ -25,16 +26,16 @@
 (defprotocol GameManager
   (create-game [this client-id lang first-colour]
     "Create a new game for client with ID `client-id` in language `lang` with
- the team `first-colour` making the first guess.")
+  the team `first-colour` making the first guess.")
   (open-game [this client-id game-id]
     "Open an existing game with ID `game-id` for client with ID `client-id`
- as administrator.")
+  as administrator.")
   (join-game [this client-id invite]
     "Join an existing game with ID `game-id` for client with ID `client-id`
- as an invitee.")
+  as an invitee.")
   (discover-code [this game-id word]
     "Discover the colour of agent with code name `word` in game
- with ID `game-id`."))
+  with ID `game-id`."))
 
 (defn- add-player [players game-id client-id]
   (-> players

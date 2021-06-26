@@ -1,4 +1,5 @@
 (ns github.bentomi.kodnevek.ws
+  "WebSocket handling."
   (:require [cognitect.transit :as transit]
             [re-frame.core :as re-frame]
             [github.bentomi.kodnevek.errors :as errors]))

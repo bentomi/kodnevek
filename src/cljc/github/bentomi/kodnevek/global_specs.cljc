@@ -1,4 +1,5 @@
 (ns github.bentomi.kodnevek.global-specs
+  "Specs relevant for the game logic."
   (:require [clojure.spec.alpha :as s]))
 
 (s/def ::id string?)

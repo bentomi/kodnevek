@@ -1,10 +1,11 @@
 (ns github.bentomi.kodnevek.game-store
+  "Interface for storing games."
   (:require [integrant.core :as ig]))
 
 (defprotocol GameStore
   (add-game [this board]
     "Add a new game to the store and return it with a unique id plus spymaster
-    and agent references.")
+  and agent references.")
   (get-game [this id]
     "Return the game with ID `id`.")
   (resolve-invite [this invite]

@@ -1,4 +1,5 @@
 (ns github.bentomi.kodnevek.main
+  "The entry point of the frontend and the main page."
   (:require [reagent.dom :as rdom]
             [ajax.core :as ajax]
             [re-frame.core :as re-frame]

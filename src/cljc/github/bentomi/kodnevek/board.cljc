@@ -1,4 +1,5 @@
-(ns github.bentomi.kodnevek.board)
+(ns github.bentomi.kodnevek.board
+  "Abstraction representing the game board.")
 
 (defn make-field [word colour]
   {:word word

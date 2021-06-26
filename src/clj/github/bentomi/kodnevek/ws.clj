@@ -1,4 +1,5 @@
 (ns github.bentomi.kodnevek.ws
+  "WebSocket handler. Keeps track of the clients and routes messages."
   (:require [cognitect.transit :as transit]
             [clojure.tools.logging :as log]
             [clojure.core.async :as async]
