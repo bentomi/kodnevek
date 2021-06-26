@@ -1,6 +1,7 @@
 (ns github.bentomi.kodnevek.ws
   (:require [cognitect.transit :as transit]
-            [re-frame.core :as re-frame]))
+            [re-frame.core :as re-frame]
+            [github.bentomi.kodnevek.errors :as errors]))
 
 (defonce ^:private client-id (random-uuid))
 
@@ -26,37 +27,34 @@
 (re-frame/reg-event-db
  ::set-socket
  (fn [db [_ ws]]
-   (assoc db ::socket {:ws ws})))
+   (assoc db ::socket ws)))
 
 (re-frame/reg-sub
  ::socket
  (fn [db]
    (::socket db)))
 
-(re-frame/reg-event-db
- ::set-session
- (fn [db [_ session-id]]
-   (assoc-in db [::socket :session-id] session-id)))
-
 (re-frame/reg-event-fx
  ::send-message
  (fn [{db :db} [_ message error-event]]
-   (let [{:keys [ws session-id]} (::socket db)]
-     (if (nil? session-id)
-       (when (some? error-event)
-         {:dispatch error-event})
-       {:ws-send {:ws ws
-                  :message {:session-id session-id
-                            :message message}}}))))
+   (if-let [ws (::socket db)]
+     {:ws-send {:ws ws
+                :message {:client-id client-id
+                          :message message}}}
+     (when (some? error-event)
+         {:dispatch error-event}))))
 
-(defn- handle-new-session [session-id]
-  (re-frame/dispatch [::set-session session-id])
-  (re-frame/dispatch [::send-message [:client-id client-id]]))
+(defn send-message-event [message]
+  [::send-message message [::errors/no-session-error (get message 0)]])
+
+(defn- handle-new-session [handler session-token]
+  (re-frame/dispatch [::send-message [:register-session session-token]])
+  (handler [:new-session]))
 
 (defn- handle-message-event [handler event]
   (let [message (-> event .-data parse-message)]
     (case (get message 0)
-      :new-session (handle-new-session (get message 1))
+      :new-session (handle-new-session handler (get message 1))
       :pong (js/console.debug "pong" (get message 1))
       (handler message))))
 

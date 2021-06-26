@@ -11,7 +11,7 @@
 (io/make-parents "target/public/f")
 
 (integrant.repl/set-prep!
- #(-> (main/system)
+ #(-> (main/system 0)
       (assoc-in [:github.bentomi.kodnevek.server/container
                  :io.pedestal.http/file-path]
                 "target/public")

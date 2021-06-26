@@ -11,18 +11,29 @@
             [io.pedestal.http.jetty.websockets :as pws]
             [github.bentomi.kodnevek.game :as game]
             [github.bentomi.kodnevek.words :as words]
-            [github.bentomi.kodnevek.ws :as ws]))
+            [github.bentomi.kodnevek.ws :as ws])
+  (:import (org.eclipse.jetty.servlet ServletContextHandler)
+           (org.eclipse.jetty.server.handler.gzip GzipHandler)))
+
+(defn gzip-configurator [^ServletContextHandler ctx]
+  (doto ctx (.setGzipHandler (GzipHandler.))))
+
+(defn- main-page [config app-attrs]
+  (-> (hpage/html5
+       [:head
+        [:meta {:charset "UTF-8"}]
+        (hpage/include-css "css/style.css")]
+       [:body
+        [:div#app app-attrs]
+        (hpage/include-js (::main-script config))])
+      resp/response
+      (resp/content-type "text/html; charset=utf-8")))
 
 (defn- index [config request]
-  (->  (hpage/html5
-        [:head
-         [:meta {:charset "UTF-8"}]
-         (hpage/include-css "css/style.css")]
-        [:body
-         [:div#app]
-         (hpage/include-js (::main-script config))])
-       resp/response
-       (resp/content-type "text/html; charset=utf-8")))
+  (main-page config {}))
+
+(defn- index-with-id [config attr request]
+  (main-page config {attr (get-in request [:query-params :id])}))
 
 (defn- get-languages [config _request]
   (let [wp (::words/provider config)]
@@ -58,9 +69,11 @@
 
 (defn- routes [config]
   (route/expand-routes
-   #{["/" :get (partial index config) :route-name :index]
+   #{["/" :get #(index config %) :route-name :index]
+     ["/open" :get #(index-with-id config :data-game-id %) :route-name :open]
+     ["/join" :get #(index-with-id config :data-invite %) :route-name :join]
      ["/languages"
-      :get [coerce-body content-neg-intc (partial get-languages config)]
+      :get [coerce-body content-neg-intc #(get-languages config %)]
       :route-name :languages]}))
 
 (defn- ws-paths [config]
@@ -75,10 +88,14 @@
 (defn- create-server [config]
   (-> {::http/routes (routes config)
        ::http/mime-types mime/default-mime-types
-       ::http/secure-headers {:content-security-policy-settings
-                              "object-src 'none'; default-src 'self'"}
-       ::http/container-options {:context-configurator
-                                 #(pws/add-ws-endpoints % (ws-paths config))}}
+       ::http/secure-headers
+       {:content-security-policy-settings
+        "object-src 'none'; default-src 'self'"}
+       ::http/container-options
+       {:context-configurator
+        #(-> %
+             gzip-configurator
+             (pws/add-ws-endpoints (ws-paths config)))}}
       (merge config)
       http/default-interceptors
       http/create-server))

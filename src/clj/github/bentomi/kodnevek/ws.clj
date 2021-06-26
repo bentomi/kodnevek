@@ -23,19 +23,30 @@
 
 (defn new-ws-client
   [ws-session send-ch]
-  (let [session-id (str (UUID/randomUUID))
-        init-message (write-transit [:new-session session-id])]
+  (let [session-token (str (UUID/randomUUID))
+        init-message (write-transit [:new-session session-token])]
     (if (async/put! send-ch init-message)
-      (swap! ws-clients assoc session-id {:ws-session ws-session
-                                          :send-ch send-ch}))))
+      (let [session {:ws-session ws-session, :send-ch send-ch}]
+        (swap! ws-clients update :tokens assoc session-token session)))))
 
-(defn send-message [session-id message]
-  (if-let [s (get @ws-clients session-id)]
-    (async/put! (:send-ch s) (write-transit message))
-    (log/info :msg (format "session with ID %s not found" session-id))))
+(defn- register-session
+  ([client-id session-token]
+   (swap! ws-clients register-session client-id session-token))
+  ([ws-clients client-id session-token]
+   (if-let [session (get-in ws-clients [:tokens session-token])]
+     (-> ws-clients
+         (update :clients assoc client-id session)
+         (update :tokens dissoc session-token))
+     ws-clients)))
+
+(defn send-message [client-id message]
+  (if-let [send-ch (get-in @ws-clients [:clients client-id :send-ch])]
+    (async/put! send-ch (write-transit message))
+    (log/warnf "session for client %s not found" client-id)))
 
 (defn handle-message [event-handler message-text]
-  (let [{:keys [session-id message] :as event} (read-transit message-text)]
+  (let [{:keys [client-id message] :as event} (read-transit message-text)]
     (case (get message 0)
-      :ping (send-message session-id [:pong (System/currentTimeMillis)])
+      :register-session (register-session client-id (get message 1))
+      :ping (send-message client-id [:pong (System/currentTimeMillis)])
       (event/handle-event event-handler event))))
