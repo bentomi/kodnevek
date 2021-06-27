@@ -33,55 +33,51 @@ table.board td {
     transform: rotateY(180deg);
 }
 table.board td.red {
-    border: 3px solid darkred;
+    border: 0.17em solid darkred;
 }
 .card__face--back.red {
     background-color: darkred;
 }
 table.board td.blue {
-    border: 3px solid navy;
+    border: 0.17em solid navy;
 }
 .card__face--back.blue {
     background-color: navy;
 }
 table.board td.white {
-    border: 3px solid white;
+    border: 0.17em solid white;
 }
 .card__face--back.white {
     background-color: white;
 }
 table.board td.black {
-    border: 3px solid black;
+    border: 0.17em solid black;
 }
 .card__face--back.black {
     background-color: black;
 }
 table.board td.clear {
-    border: 3px solid transparent;
+    border: 0.17em solid transparent;
 }
 ul.invites {
     list-style-type: none;
     margin: 0;
     padding: 0;
-    font-size: 1.5vw;
-    clear: left;
+    font-size: 1.8vw;
+    display: flex;
 }
 ul.invites li {
-    float: left;
-    display: block;
-    padding: 14px 16px;
+    padding: 0.4em 0.8em;
 }
 ul.controls {
     list-style-type: none;
     margin: 0;
     padding: 0;
-    font-size: 1.5vw;
-    clear: left;
+    font-size: 1.8vw;
+    display: flex;
 }
 ul.controls li {
-    float: left;
-    display: block;
-    padding: 14px 16px;
+    padding: 0.2em 0.8em;
 }
 ul.controls select {
     font-family: inherit;
@@ -92,5 +88,14 @@ ul.controls button {
     font-size: inherit;
 }
 .lang_selector label {
-    padding-right: 2px;
+    padding-right: 0.2em;
+}
+.new_game label {
+    padding-right: 0.2em;
+}
+.new_game button.red {
+    border: 0.17em solid darkred;
+}
+.new_game button.blue {
+    border: 0.17em solid navy;
 }

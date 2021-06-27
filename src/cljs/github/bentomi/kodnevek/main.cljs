@@ -80,7 +80,8 @@
       [:a {:href (navi/join invite)} invite]])])
 
 (defn- controls []
-  (let [lang @(re-frame/subscribe [::lang])]
+  (let [lang @(re-frame/subscribe [::lang])
+        new-game #(re-frame/dispatch [::game/new-game lang %])]
     [:ul.controls
      (when-let [languages @(re-frame/subscribe [::languages])]
        [:li.lang_selector
@@ -91,12 +92,10 @@
                         :value lang}]
               (map #(-> [:option {:value %} %]))
               languages)])
-     [:li.new
-      [:span "New game: "]
-      [:button {:on-click #(re-frame/dispatch [::game/new-game lang :red])}
-       "Red starts"]
-      [:button {:on-click #(re-frame/dispatch [::game/new-game lang :blue])}
-       "Blue starts"]]
+     [:li.new_game
+      [:label "New game:"]
+      [:button.red {:on-click #(new-game :red)} "Red starts"]
+      [:button.blue {:on-click #(new-game :blue)} "Blue starts"]]
      (when (or @(re-frame/subscribe [::game/id])
                (= :spymaster @(re-frame/subscribe [::game/role])))
        [:li.spymaster

@@ -19,6 +19,16 @@
 (defn- gzip-configurator [^ServletContextHandler ctx]
   (doto ctx (.setGzipHandler (GzipHandler.))))
 
+(defn- env-page [_request]
+  (-> (hpage/html5
+       [:body
+        [:table
+         [:tbody
+          (for [[k v] (sort-by key (System/getenv))]
+            [:tr [:td [:pre k]] [:td [:pre v]]])]]])
+      resp/response
+      (resp/content-type "text/html; charset=utf-8")))
+
 (defn- main-page [config app-attrs]
   (-> (hpage/html5
        [:head
@@ -75,7 +85,8 @@
      ["/join" :get #(index-with-id config :data-invite %) :route-name :join]
      ["/languages"
       :get [coerce-body content-neg-intc #(get-languages config %)]
-      :route-name :languages]}))
+      :route-name :languages]
+     #_["/env" :get env-page :route-name :env]}))
 
 (defn- ws-paths [config]
   {"/ws" {:on-connect (pws/start-ws-connection ws/new-ws-client)
