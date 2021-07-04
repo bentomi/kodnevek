@@ -42,7 +42,7 @@
       (update-in [:clients game-id] add-to-set client-id)
       (assoc-in [:game client-id] game-id)))
 
-(deftype SimpleGameManager [word-provider game-store players]
+(deftype SimpleGameManager [word-provider game-store ws-sender players]
   GameManager
   (create-game [this client-id lang first-colour]
     (let [board (board/make-board (words/get-words word-provider lang size)
@@ -60,10 +60,11 @@
       (when-let [{:keys [board discovered-codes]}
                  (game-store/get-game game-store game-id)]
         (swap! players add-player game-id client-id)
-        {:game {:board (if (and discovered-codes (not= :spymaster role))
-                         (board/clear-undiscovered board)
-                         board)
-                :discovered-codes discovered-codes}
+        {:game
+         (cond-> {:board (if (and discovered-codes (not= :spymaster role))
+                           (board/clear-undiscovered board discovered-codes)
+                           board)}
+           discovered-codes (assoc :discovered-codes discovered-codes))
          :role role})))
   (discover-code [this game-id word]
     (when-let [colour (game-store/discover-word game-store game-id word)]
@@ -74,25 +75,26 @@
       :create-game
       (let [[_ lang first-colour] message
             resp [:new-game (create-game this client-id lang first-colour)]]
-        (ws/send-message client-id resp))
+        (ws/send-message ws-sender client-id resp))
       :open-game
       (let [id (get message 1)
             resp [:opened-game (open-game this client-id id)]]
-        (ws/send-message client-id resp))
+        (ws/send-message ws-sender client-id resp))
       :join-game
       (let [invite (get message 1)
             resp [:joined-game (join-game this client-id invite)]]
-        (ws/send-message client-id resp))
+        (ws/send-message ws-sender client-id resp))
       :discover-code
       (when-let [game-id (get-in @players [:game client-id])]
         (let [word (get message 1)
               resp-params (discover-code this game-id word)
               resp [:discovered-code resp-params]]
           (doseq [player-id (get-in @players [:clients game-id])]
-            (ws/send-message player-id resp))))
+            (ws/send-message ws-sender player-id resp))))
       (log/info "received event" event))))
 
 (defmethod ig/init-key ::provider [_key config]
   (SimpleGameManager. (::word-provider config)
                       (::game-store config)
+                      (::ws-sender config)
                       (atom {})))

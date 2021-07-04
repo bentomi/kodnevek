@@ -11,12 +11,6 @@
       (recur (key-generator))
       k)))
 
-(defn- add-to-map [m key-generator v]
-  (loop [k (key-generator)]
-    (if (contains? m k)
-      (recur (key-generator))
-      [k (assoc m k v)])))
-
 (defn- store-game
   [{:keys [games invites] :as store} key-generator board]
   (let [invite-taken? (partial contains? invites)

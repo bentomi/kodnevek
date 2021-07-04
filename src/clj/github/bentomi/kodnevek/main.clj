@@ -8,8 +8,8 @@
             [github.bentomi.kodnevek.game :as game]
             [github.bentomi.kodnevek.in-mem-game-store :as game-store]
             [github.bentomi.kodnevek.server :as server]
-            [github.bentomi.kodnevek.words :as words]
-            [github.bentomi.kodnevek.in-mem-word-provider :as word-provider]))
+            [github.bentomi.kodnevek.in-mem-word-provider :as word-provider]
+            [github.bentomi.kodnevek.ws-handler :as ws-handler]))
 
 (defn- coerce-to-int [property]
   (if (int? property)
@@ -26,13 +26,16 @@
                          :io.pedestal.http/resource-path "public"
                          ::server/main-script "js/main.js"
                          ::server/event-handler (ig/ref ::game/provider)
-                         ::words/provider (ig/ref ::word-provider/provider)}
+                         ::server/word-provider (ig/ref ::word-provider/provider)
+                         ::server/ws-handler (ig/ref ::ws-handler/provider)}
      ::game/provider {::game/word-provider (ig/ref ::word-provider/provider)
-                      ::game/game-store (ig/ref ::game-store/provider)}
+                      ::game/game-store (ig/ref ::game-store/provider)
+                      ::game/ws-sender (ig/ref ::ws-handler/provider)}
      ::word-provider/provider {::word-provider/resources
                                {"en" "cn-words-en.txt"
                                 "ru" "cn-words-ru.txt"}}
-     ::game-store/provider {::game-store/key-generator key-generator}}))
+     ::game-store/provider {::game-store/key-generator key-generator}
+     ::ws-handler/provider {}}))
 
 (defn -main [& args]
   (let [seed (bit-xor (System/currentTimeMillis) (System/nanoTime))

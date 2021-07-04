@@ -20,5 +20,8 @@
     (when-let [words (get word-lists lang)]
       (shuffle (util/fixed-sample size words)))))
 
+(defn ->word-provider [resource-map]
+  (->InMemoryWordProvider (m/map-vals read-lines resource-map)))
+
 (defmethod ig/init-key ::provider [_key config]
-  (InMemoryWordProvider. (m/map-vals read-lines (::resources config))))
+  (->word-provider (::resources config)))

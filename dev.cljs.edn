@@ -1,3 +1,4 @@
 ^{:css-dirs ["resources/public/css"]
-  :open-url false}
+  :open-url false
+  :connect-url "ws://[[client-hostname]]:[[server-port]]/figwheel-connect"}
 {:main github.bentomi.kodnevek.main}

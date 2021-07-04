@@ -47,7 +47,7 @@
   (main-page config {attr (get-in request [:query-params :id])}))
 
 (defn- get-languages [config _request]
-  (let [wp (::words/provider config)]
+  (let [wp (::word-provider config)]
     (resp/response (words/get-languages wp))))
 
 (def ^:private supported-types
@@ -89,13 +89,16 @@
      #_["/env" :get env-page :route-name :env]}))
 
 (defn- ws-paths [config]
-  {"/ws" {:on-connect (pws/start-ws-connection ws/new-ws-client)
-          :on-text (partial ws/handle-message (::event-handler config))
-          :on-binary (fn [payload offset length]
-                       (log/warn :msg "Binary Message!" :bytes payload))
-          :on-error (fn [t] (log/error :msg "WS Error happened" :exception t))
-          :on-close (fn [num-code reason-text]
-                      (log/info :msg "WS Closed:" :reason reason-text))}})
+  (let [ws-handler (::ws-handler config)
+        event-handler (::event-handler config)]
+    {"/ws" {:on-connect (pws/start-ws-connection
+                         (partial ws/new-ws-client ws-handler))
+            :on-text (partial ws/handle-message ws-handler event-handler)
+            :on-binary (fn [payload offset length]
+                         (log/warn :msg "Binary Message!" :bytes payload))
+            :on-error (fn [t] (log/error :msg "WS Error happened" :exception t))
+            :on-close (fn [num-code reason-text]
+                        (log/info :msg "WS Closed:" :reason reason-text))}}))
 
 (defn- create-server [config]
   (-> {::http/routes (routes config)

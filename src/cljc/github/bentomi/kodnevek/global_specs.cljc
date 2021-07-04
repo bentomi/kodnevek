@@ -8,7 +8,7 @@
 (s/def ::spymaster-invite ::invite)
 
 (s/def ::word string?)
-(s/def ::colour #{:red :blue :white :black :clear})
+(s/def ::colour #{:blue :red :white :black :clear})
 (s/def ::index nat-int?)
 (s/def ::field (s/keys :req-un [::word] :opt-un [::colour ::index]))
 (s/def ::board (s/and (s/coll-of ::field :kind vector?)
