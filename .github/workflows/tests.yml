@@ -1,0 +1,26 @@
+name: Tests
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Setup Clojure
+      uses: DeLaGuardo/setup-clojure@3.4
+      with:
+        cli: 1.10.3.855
+
+    - name: Install dependencies
+      run: clojure -e "(println \"Fetched deps\")"
+
+    - name: Run tests
+      run: clojure -X:test:test-run
