@@ -1,7 +1,6 @@
 (ns github.bentomi.kodnevek.game-test
   (:require [clojure.test :as test :refer [deftest is]]
             [clojure.spec.alpha :as spec]
-            [clojure.spec.test.alpha :as stest]
             [clojure.test.check.generators :as gen]
             [clojure.test.check.clojure-test :refer [defspec]]
             [com.gfredericks.test.chuck.clojure-test :refer [checking]]
@@ -106,7 +105,7 @@
 (def ^:private role-gen (spec/gen ::gs/role))
 
 (deftest single-game-test
-  (checking "that a single game can be shared and played"
+  (checking "a single game can be shared and played"
    [first-colour (gen/elements #{:blue :red})
     creator (spec/gen ::gs/id)
     share-infos (gen/vector (gen/one-of [id-gen (gen/tuple id-gen role-gen)]))

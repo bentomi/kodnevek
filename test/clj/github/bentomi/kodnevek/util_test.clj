@@ -22,7 +22,7 @@
 (def ^:private allowed-deviation (/ 3 100))
 
 (deftest samples-are-uniform
-  (checking "that samples have a uniform distribution" 3
+  (checking "samples have a uniform distribution" 3
    [n (gen/fmap inc gen/nat)
     population (gen/vector-distinct gen/small-integer
                                     {:min-elements 1 :max-elements 100})

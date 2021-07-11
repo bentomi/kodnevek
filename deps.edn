@@ -41,8 +41,8 @@
                  :extra-deps {com.bhauman/figwheel-main {:mvn/version "0.2.13"}}}
            :build {:main-opts ["-m" "figwheel.main" "-b" "dev" "-r"]}
            :min {:main-opts ["-m" "figwheel.main" "-O" "advanced" "-bo" "min"]}
-           :test-cljs {:extra-paths ["test/cljs"]}
-           :test-cljs-run {:main-opts ["-m" "figwheel.main" "-co" "test.cljs.edn"
+           :test-cljs-run {:main-opts ["-m" "figwheel.main"
+                                       "-co" "test.cljs.edn"
                                        "-m" "github.bentomi.kodnevek.test-runner"]}
            :uberjar {:replace-deps {com.github.seancorfield/depstar {:mvn/version "2.0.216"}}
                      :exec-fn hf.depstar/uberjar

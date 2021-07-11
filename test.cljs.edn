@@ -1,0 +1,4 @@
+^{:launch-js ["/opt/google/chrome/chrome" "--headless" "--disable-gpu"
+              "--repl" :open-url]
+ :ring-server-options {:port 9501}}
+{:main github.bentomi.kodnevek.test-runner}

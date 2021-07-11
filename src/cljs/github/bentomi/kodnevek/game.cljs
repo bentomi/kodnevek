@@ -35,23 +35,24 @@
   (cond-> field
     (= word (:word field)) (assoc :colour colour)))
 
-(re-frame/reg-event-db
- ::add-discovered-code
- (fn [db [_ {:keys [word colour]}]]
-   (when-let [index (:index (board/find-word (-> db ::game :board) word))]
-     (-> db
-         (update-in [::game :discovered-codes] (fnil conj #{}) word)
-         (assoc-in [::game :board index :colour] colour)))))
+(defn- add-discovered-code [db [_ {:keys [word colour]}]]
+  (if-let [index (:index (board/find-word (-> db ::game :board) word))]
+    (-> db
+        (update-in [::game :discovered-codes] (fnil conj #{}) word)
+        (assoc-in [::game :board index :colour] colour))
+    db))
 
-(re-frame/reg-sub
- ::coloured-words
- (fn [db]
-   (when-let [board (-> db ::game :board)]
-     (let [size (count board)
-           discovered-codes (get-in db [::game :discovered-codes] #{})]
-       (->> board
-            (map #(assoc % :discovered? (contains? discovered-codes (:word %))))
-            (partition-all (-> size js/Math.sqrt int)))))))
+(re-frame/reg-event-db ::add-discovered-code add-discovered-code)
+
+(defn- coloured-words [db]
+  (when-let [board (-> db ::game :board)]
+    (let [size (count board)
+          discovered-codes (get-in db [::game :discovered-codes] #{})]
+      (->> board
+           (map #(assoc % :discovered? (contains? discovered-codes (:word %))))
+           (partition-all (-> size js/Math.sqrt js/Math.ceil))))))
+
+(re-frame/reg-sub ::coloured-words coloured-words)
 
 (re-frame/reg-sub
  ::id
@@ -76,8 +77,7 @@
 (re-frame/reg-event-fx
  ::new-session
  (fn [{db :db} [_ lang]]
-   (let [open-id (::open-id db)
-         invite (::invite db)]
+   (let [{::keys [open-id invite]} db]
      (cond open-id {:dispatch (ws/send-message-event [:open-game open-id])}
            invite {:dispatch (ws/send-message-event [:join-game invite])}))))
 
