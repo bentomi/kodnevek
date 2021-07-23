@@ -2,7 +2,6 @@
   (:require [clojure.test :as test :refer [deftest is]]
             [clojure.spec.alpha :as spec]
             [clojure.test.check.generators :as gen]
-            [clojure.test.check.clojure-test :refer [defspec]]
             [com.gfredericks.test.chuck.clojure-test :refer [checking]]
             [com.github.bentomi.kodnevek.event :as event]
             [com.github.bentomi.kodnevek.in-mem-game-store :as game-store]

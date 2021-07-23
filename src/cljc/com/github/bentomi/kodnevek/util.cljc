@@ -79,3 +79,13 @@
   (if (vector? coll)
     (fixed-sample-vector n coll)
     (fixed-sample-stream n coll)))
+
+(defn assoc-missing
+  "Associates a key with a value in a map, if and only if the key is not
+  already mapped to non-nil value."
+  ([m k v]
+   (if (some? (get m k)) m (assoc m k v)))
+  ([m k v & kvs]
+   (reduce (fn [m [k v]] (assoc-missing m k v))
+           (assoc-missing m k v)
+           (partition 2 kvs))))

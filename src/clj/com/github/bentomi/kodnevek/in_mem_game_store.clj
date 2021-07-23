@@ -40,7 +40,9 @@
   (get-game [this id]
     (get-in @store [:games id]))
   (resolve-invite [this invite]
-    (get-in @store [:invites invite]))
+    (when-let [{:keys [type game-id]} (get-in @store [:invites invite])]
+      {:type type
+       :game (store/get-game this game-id)}))
   (discover-word [this game-id word]
     (swap! store update-in [:games game-id :discovered-codes] add-to-set word)
     (:colour (board/find-word (get-in @store [:games game-id :board]) word))))

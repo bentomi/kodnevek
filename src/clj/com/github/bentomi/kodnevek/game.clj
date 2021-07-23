@@ -55,17 +55,16 @@
       (swap! players add-player game-id client-id)
       game))
   (join-game [this client-id invite]
-    (when-let [{role :type, game-id :game-id}
+    (when-let [{role :type
+                {:keys [id board discovered-codes]} :game}
                (game-store/resolve-invite game-store invite)]
-      (when-let [{:keys [board discovered-codes]}
-                 (game-store/get-game game-store game-id)]
-        (swap! players add-player game-id client-id)
-        {:game
-         (cond-> {:board (if (and discovered-codes (not= :spymaster role))
-                           (board/clear-undiscovered board discovered-codes)
-                           board)}
-           discovered-codes (assoc :discovered-codes discovered-codes))
-         :role role})))
+      (swap! players add-player id client-id)
+      {:game
+       (cond-> {:board (if (and discovered-codes (not= :spymaster role))
+                         (board/clear-undiscovered board discovered-codes)
+                         board)}
+         discovered-codes (assoc :discovered-codes discovered-codes))
+       :role role}))
   (discover-code [this game-id word]
     (when-let [colour (game-store/discover-word game-store game-id word)]
       {:colour colour, :word word}))

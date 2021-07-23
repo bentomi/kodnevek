@@ -7,5 +7,5 @@
 - [x] Add WebSocket communication
 - [x] Implement invitations
 - [x] Implement synchronisation between players
-- [ ] Durable store for games
+- [x] Durable store for games
 - [ ] Garbage collect client sessions
