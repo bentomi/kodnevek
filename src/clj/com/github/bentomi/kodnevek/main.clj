@@ -48,7 +48,8 @@
       ::word-provider/provider
       {::word-provider/resources
        {"en" "cn-words-en.txt"
-        "ru" "cn-words-ru.txt"}}
+        "ru" "cn-words-ru.txt"
+        "de" "cn-words-de.txt"}}
       ::ws-handler/provider
       {}}
      (game-store-conf key-generator))))
