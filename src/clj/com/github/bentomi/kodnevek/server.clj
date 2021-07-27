@@ -97,8 +97,7 @@
             :on-binary (fn [payload offset length]
                          (log/warn :msg "Binary Message!" :bytes payload))
             :on-error (fn [t] (log/error :msg "WS Error happened" :exception t))
-            :on-close (fn [num-code reason-text]
-                        (log/info :msg "WS Closed:" :reason reason-text))}}))
+            :on-close (partial ws/handle-close ws-handler)}}))
 
 (defn- create-server [config]
   (-> {::http/routes (routes config)

@@ -10,4 +10,6 @@
     "Register the new session `ws-session` with the output channel `send-ch`.")
   (handle-message [this event-handler message-text]
     "Handle the incoming message serialized in `message-text` passing
-  application level messages to `event-handler`."))
+  application level messages to `event-handler`.")
+  (handle-close [this num-code reason-text]
+    "Handle the closing of a session."))
