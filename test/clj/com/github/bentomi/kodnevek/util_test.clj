@@ -27,14 +27,20 @@
     population (gen/vector-distinct gen/small-integer
                                     {:min-elements 1 :max-elements 100})
     wrapper-fn (gen/elements [identity seq])]
-   (let [selections 1000000
+   (let [cores (.. Runtime getRuntime availableProcessors)
+         selections (/ 1000000 cores)
          population-size (count population)
          sample-size (min n population-size)
          expected-occurrence (* (/ selections population-size) sample-size)
          max-deviation (* expected-occurrence allowed-deviation)
          min-occurrence (- expected-occurrence max-deviation)
-         max-occurrence (+ expected-occurrence max-deviation)]
-     (->> (repeatedly selections #(u/fixed-sample n (wrapper-fn population)))
-          (apply concat)
-          frequencies
-          (every? #(<= min-occurrence (second %) max-occurrence))))))
+         max-occurrence (+ expected-occurrence max-deviation)
+         generate-sample #(u/fixed-sample n (wrapper-fn population))]
+     (->> (repeatedly cores
+                      #(future (->> (repeatedly selections generate-sample)
+                                    (apply concat)
+                                    frequencies)))
+          doall
+          (map deref)
+          (apply merge-with +)
+          (every? #(<= min-occurrence (val %) max-occurrence))))))
