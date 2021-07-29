@@ -60,7 +60,14 @@
   (with-open [gs (->game-store)]
     (let [threads 6
           games (+ threads 4)
-          tp (Executors/newFixedThreadPool threads)
-          test-game (fn [] (.submit tp ^Callable #(check-game gs)))
-          futures (into [] (repeatedly games test-game))]
-      (run! #(.get % 1 TimeUnit/MINUTES) futures))))
+          timeout-guard (Object.)
+          orig-executor clojure.lang.Agent/soloExecutor
+          executor (Executors/newFixedThreadPool threads)]
+      (set-agent-send-off-executor! executor)
+      (try
+        (let [futures (into [] (repeatedly games #(future (check-game gs))))]
+          (run! #(is (not= timeout-guard (deref % 60000 timeout-guard)))
+                futures))
+        (finally
+          (set-agent-send-off-executor! orig-executor)
+          (.shutdown executor))))))
