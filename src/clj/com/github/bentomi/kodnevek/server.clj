@@ -10,7 +10,6 @@
             [io.pedestal.http.route :as route]
             [io.pedestal.http.content-negotiation :as conneg]
             [io.pedestal.http.jetty.websockets :as pws]
-            [com.github.bentomi.kodnevek.game :as game]
             [com.github.bentomi.kodnevek.words :as words]
             [com.github.bentomi.kodnevek.ws :as ws])
   (:import (org.eclipse.jetty.servlet ServletContextHandler)
@@ -19,7 +18,7 @@
 (defn- gzip-configurator [^ServletContextHandler ctx]
   (doto ctx (.setGzipHandler (GzipHandler.))))
 
-(defn- env-page [_request]
+#_(defn- env-page [_request]
   (-> (hpage/html5
        [:body
         [:table
@@ -40,7 +39,7 @@
       resp/response
       (resp/content-type "text/html; charset=utf-8")))
 
-(defn- index [config request]
+(defn- index [config _request]
   (main-page config {}))
 
 (defn- index-with-id [config attr request]
@@ -94,7 +93,7 @@
     {"/ws" {:on-connect (pws/start-ws-connection
                          (partial ws/new-ws-client ws-handler))
             :on-text (partial ws/handle-message ws-handler event-handler)
-            :on-binary (fn [payload offset length]
+            :on-binary (fn [payload _offset _length]
                          (log/warn :msg "Binary Message!" :bytes payload))
             :on-error (fn [t] (log/error :msg "WS Error happened" :exception t))
             :on-close (partial ws/handle-close ws-handler)}}))

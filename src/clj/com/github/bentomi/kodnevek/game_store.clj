@@ -1,6 +1,5 @@
 (ns com.github.bentomi.kodnevek.game-store
-  "Interface for storing games."
-  (:require [integrant.core :as ig]))
+  "Interface for storing games.")
 
 (defprotocol GameStore
   (add-game [this board]

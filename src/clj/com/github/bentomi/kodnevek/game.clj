@@ -44,17 +44,17 @@
 
 (deftype SimpleGameManager [word-provider game-store ws-sender players]
   GameManager
-  (create-game [this client-id lang first-colour]
+  (create-game [_this client-id lang first-colour]
     (let [board (board/make-board (words/get-words word-provider lang size)
                                   (generate-colours first-colour))
           game (game-store/add-game game-store board)]
       (swap! players add-player (:id game) client-id)
       game))
-  (open-game [this client-id game-id]
+  (open-game [_this client-id game-id]
     (when-let [game (game-store/get-game game-store game-id)]
       (swap! players add-player game-id client-id)
       game))
-  (join-game [this client-id invite]
+  (join-game [_this client-id invite]
     (when-let [{role :type
                 {:keys [id board discovered-codes]} :game}
                (game-store/resolve-invite game-store invite)]
@@ -65,7 +65,7 @@
                          board)}
          discovered-codes (assoc :discovered-codes discovered-codes))
        :role role}))
-  (discover-code [this game-id word]
+  (discover-code [_this game-id word]
     (when-let [colour (game-store/discover-word game-store game-id word)]
       {:colour colour, :word word}))
   event/EventHandler

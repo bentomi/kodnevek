@@ -49,7 +49,7 @@
 (spec/def ::session (spec/keys :req-un [::ws-session ::send-ch]))
 (spec/def ::clients (spec/every-kv ::client-id ::session))
 (spec/def ::tokens (spec/every-kv ::session-token ::session))
-(spec/def ::ws-clients (spec/keys :req-opt [::clients ::tokens]))
+(spec/def ::ws-clients (spec/keys :opt-un [::clients ::tokens]))
 
 (spec/fdef init-session
   :args (spec/cat :session-token ::session-token
@@ -119,7 +119,7 @@
 
 (deftype SimpleWSHandler [ws-clients]
   ws/WSHandler
-  (new-ws-client [this ws-session send-ch]
+  (new-ws-client [_this ws-session send-ch]
     (gc ws-clients)
     (let [session-token (str (UUID/randomUUID))
           now (System/currentTimeMillis)]
@@ -127,7 +127,7 @@
         (swap! ws-clients
                update :tokens
                assoc session-token (with-meta session {:created now})))))
-  (handle-message [this event-handler message-text]
+  (handle-message [_this event-handler message-text]
     (gc ws-clients)
     (let [{:keys [client-id message] :as event} (read-transit message-text)]
     (case (get message 0)
@@ -136,11 +136,11 @@
       :ping
       (send-message* @ws-clients client-id [:pong (System/currentTimeMillis)])
       (event/handle-event event-handler event))))
-  (handle-close [this num-code reason-text]
+  (handle-close [_this num-code reason-text]
     (gc ws-clients)
     (log/infof "WS closed (%s) - %s" num-code reason-text))
   ws/MessageSender
-  (send-message [this client-id message]
+  (send-message [_this client-id message]
     (send-message* @ws-clients client-id message)))
 
 (defn ->ws-handler []

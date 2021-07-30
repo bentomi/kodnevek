@@ -6,7 +6,6 @@
             [integrant.core :as ig]
             [next.jdbc :as jdbc]
             [next.jdbc.connection :as connection]
-            [next.jdbc.result-set :as rs]
             [next.jdbc.sql :as sql]
             [com.github.bentomi.kodnevek.board :as board]
             [com.github.bentomi.kodnevek.game-store :as store]
@@ -32,7 +31,7 @@ create table if not exists game (
           (let [k (key-generator)]
             (jdbc/execute-one! ds ["insert into id (id) values (?)" k])
             k)
-          (catch SQLIntegrityConstraintViolationException e))
+          (catch SQLIntegrityConstraintViolationException _))
        repeatedly
        (some identity)))
 
@@ -88,27 +87,26 @@ create table if not exists game (
 
 (deftype JdbcGameStore [key-generator ^HikariDataSource ds]
   store/GameStore
-  (add-game [this board]
+  (add-game [_this board]
     (let [ids (zipmap [:id :agent-invite :spymaster-invite]
                       (repeatedly #(generate-key key-generator ds)))
           game (assoc ids :board board)]
       (insert-game ds game)
       game))
-  (get-game [this id]
+  (get-game [_this id]
     (find-game-by-id ds id))
-  (resolve-invite [this invite]
-    (when-let [{:keys [agent-invite spymaster-invite] :as game}
-               (find-game-by-invite ds invite)]
-      {:type (if (= invite agent-invite)
+  (resolve-invite [_this invite]
+    (when-let [game (find-game-by-invite ds invite)]
+      {:type (if (= invite (:agent-invite game))
                :agent
                :spymaster)
        :game game}))
-  (discover-word [this game-id word]
+  (discover-word [_this game-id word]
     (when-let [{:keys [board]} (find-game-by-id ds game-id "board")]
       (add-discovered-code ds game-id word)
       (:colour (board/find-word board word))))
   java.io.Closeable
-  (close [this]
+  (close [_this]
     (.close ds)))
 
 (comment

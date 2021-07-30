@@ -31,19 +31,19 @@
 
 (deftype InMemoryGameStore [key-generator store]
   store/GameStore
-  (add-game [this board]
+  (add-game [_this board]
     (loop [s @store]
       (let [[game s'] (store-game s key-generator board)]
         (if (compare-and-set! store s s')
           game
           (recur @store)))))
-  (get-game [this id]
+  (get-game [_this id]
     (get-in @store [:games id]))
   (resolve-invite [this invite]
     (when-let [{:keys [type game-id]} (get-in @store [:invites invite])]
       {:type type
        :game (store/get-game this game-id)}))
-  (discover-word [this game-id word]
+  (discover-word [_this game-id word]
     (swap! store update-in [:games game-id :discovered-codes] add-to-set word)
     (:colour (board/find-word (get-in @store [:games game-id :board]) word))))
 

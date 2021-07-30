@@ -27,13 +27,9 @@
 
 (re-frame/reg-event-fx
  ::discover-code
- (fn [{db :db} [_ word]]
+ (fn [_ [_ word]]
    (let [event [:discover-code word]]
      {:dispatch (ws/send-message-event event)})))
-
-(defn- colour-word [word colour field]
-  (cond-> field
-    (= word (:word field)) (assoc :colour colour)))
 
 (defn- add-discovered-code [db [_ {:keys [word colour]}]]
   (if-let [index (:index (board/find-word (-> db ::game :board) word))]
@@ -76,14 +72,14 @@
 
 (re-frame/reg-event-fx
  ::new-session
- (fn [{db :db} [_ lang]]
+ (fn [{db :db} [_]]
    (let [{::keys [open-id invite]} db]
      (cond open-id {:dispatch (ws/send-message-event [:open-game open-id])}
            invite {:dispatch (ws/send-message-event [:join-game invite])}))))
 
 (re-frame/reg-event-fx
  ::new-game
- (fn [{db :db} [_ lang first-colour]]
+ (fn [_ [_ lang first-colour]]
    {:dispatch (ws/send-message-event [:create-game lang first-colour])}))
 
 (defn handle-event [event]

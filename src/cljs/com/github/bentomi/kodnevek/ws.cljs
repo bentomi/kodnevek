@@ -6,9 +6,12 @@
 
 (defonce ^:private client-id (random-uuid))
 
+#_{:clj-kondo/ignore [:invalid-arity]}
 (def ^:private transit-reader (transit/reader :json))
+#_{:clj-kondo/ignore [:invalid-arity]}
 (def ^:private transit-writer (transit/writer :json))
 
+#_{:clj-kondo/ignore [:invalid-arity]}
 (defn- parse-message [message-text]
   (transit/read transit-reader message-text))
 
@@ -64,12 +67,12 @@
 
 (def ^:private ping-interval-ms 50000)
 
+#_{:clj-kondo/ignore [:unused-private-var]}
 (defonce ^:private ping-timer-id (js/setInterval ping ping-interval-ms))
 
 (defn connect [url handler]
   (when-not @(re-frame/subscribe [::socket])
-    (let [message-handler (partial handle-message-event handler)
-          w (js/WebSocket. url)]
+    (let [w (js/WebSocket. url)]
       (set! (.-onmessage w) (partial handle-message-event handler))
       (set! (.-onerror w) #(js/console.error %))
       (set! (.-onclose w) #(do (re-frame/dispatch-sync [::close-socket])

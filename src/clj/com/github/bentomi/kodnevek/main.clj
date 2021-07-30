@@ -54,7 +54,7 @@
       {}}
      (game-store-conf key-generator))))
 
-(defn -main [& args]
+(defn -main [& _args]
   (let [seed (bit-xor (System/currentTimeMillis) (System/nanoTime))
         sys (ig/init (system seed))]
     (.addShutdownHook (Runtime/getRuntime) (Thread. #(ig/halt! sys) "Cleaner"))

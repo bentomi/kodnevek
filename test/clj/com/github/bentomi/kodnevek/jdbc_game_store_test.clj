@@ -8,7 +8,7 @@
    [com.github.bentomi.kodnevek.util :as util :refer [with-send-off-executor]]
    [com.github.bentomi.kodnevek.game-store :as store]
    [com.github.bentomi.kodnevek.jdbc-game-store :as game-store])
-  (:import (java.util.concurrent Callable Executors TimeUnit)))
+  (:import (java.util.concurrent Executors TimeUnit)))
 
 (defn- key-generator []
   (str (java.util.UUID/randomUUID)))

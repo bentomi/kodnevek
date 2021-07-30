@@ -14,9 +14,9 @@
 
 (deftype InMemoryWordProvider [word-lists]
   words/WordProvider
-  (get-languages [this]
+  (get-languages [_this]
     (set (keys word-lists)))
-  (get-words [this lang size]
+  (get-words [_this lang size]
     (when-let [words (get word-lists lang)]
       (shuffle (util/fixed-sample size words)))))
 
