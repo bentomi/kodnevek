@@ -1,12 +1,13 @@
 (ns com.github.bentomi.kodnevek.jdbc-game-store-test
-  (:require [clojure.test :as test :refer [deftest is]]
-            [clojure.spec.alpha :as spec]
-            [clojure.test.check.generators :as gen]
-            [com.gfredericks.test.chuck.clojure-test :refer [checking]]
-            [com.github.bentomi.kodnevek.global-specs :as gs]
-            [com.github.bentomi.kodnevek.util :as util]
-            [com.github.bentomi.kodnevek.game-store :as store]
-            [com.github.bentomi.kodnevek.jdbc-game-store :as game-store])
+  (:require
+   [clojure.test :as test :refer [deftest is]]
+   [clojure.spec.alpha :as spec]
+   [clojure.test.check.generators :as gen]
+   [com.gfredericks.test.chuck.clojure-test :refer [checking]]
+   [com.github.bentomi.kodnevek.global-specs :as gs]
+   [com.github.bentomi.kodnevek.util :as util :refer [with-send-off-executor]]
+   [com.github.bentomi.kodnevek.game-store :as store]
+   [com.github.bentomi.kodnevek.jdbc-game-store :as game-store])
   (:import (java.util.concurrent Callable Executors TimeUnit)))
 
 (defn- key-generator []
@@ -60,14 +61,8 @@
   (with-open [gs (->game-store)]
     (let [threads 6
           games (+ threads 4)
-          timeout-guard (Object.)
-          orig-executor clojure.lang.Agent/soloExecutor
-          executor (Executors/newFixedThreadPool threads)]
-      (set-agent-send-off-executor! executor)
-      (try
+          timeout-guard (Object.)]
+      (with-send-off-executor [executor (Executors/newFixedThreadPool threads)]
         (let [futures (into [] (repeatedly games #(future (check-game gs))))]
           (run! #(is (not= timeout-guard (deref % 60000 timeout-guard)))
-                futures))
-        (finally
-          (set-agent-send-off-executor! orig-executor)
-          (.shutdown executor))))))
+                futures))))))

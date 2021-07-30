@@ -89,3 +89,24 @@
    (reduce (fn [m [k v]] (assoc-missing m k v))
            (assoc-missing m k v)
            (partition 2 kvs))))
+
+#?(:clj
+   (spec/fdef with-send-off-executor
+     :args (spec/cat :binding (spec/spec (spec/cat :name simple-symbol?
+                                                   :executor any?))
+                     :body (spec/+ any?))))
+
+#?(:clj
+   (defmacro with-send-off-executor
+     "Creates an ExecutorService by calling `executor`, sets it for the scope
+  of the form as executor for `send-off`, `future`, etc. and executes `body`.
+  The executor service created is shut down after the execution of `body`."
+     [[name executor] & body]
+     `(let [~name ~executor
+            original-executor# clojure.lang.Agent/soloExecutor]
+        (set-agent-send-off-executor! ~name)
+        (try
+          ~@body
+          (finally
+            (set-agent-send-off-executor! original-executor#)
+            (.shutdown ~name))))))
