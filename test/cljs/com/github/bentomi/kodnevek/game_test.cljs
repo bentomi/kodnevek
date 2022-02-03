@@ -13,7 +13,7 @@
     colour (spec/gen ::gs/colour)]
    (let [board (mapv #(-> {:word %}) (pop words))
          db {::g/game {:board board}}
-         discovered-word (words (dec (count words)))
+         discovered-word (peek words)
          event-vec [::g/add-discovered-code {:word discovered-word
                                              :colour colour}]
          db' (#'g/add-discovered-code db event-vec)]
