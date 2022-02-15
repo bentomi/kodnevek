@@ -13,12 +13,11 @@
 (integrant.repl/set-prep!
  #(-> (main/system 0)
       (assoc-in [:com.github.bentomi.kodnevek.server/container
+                 :com.github.bentomi.kodnevek.server/dev-mode?]
+                true)
+      (assoc-in [:com.github.bentomi.kodnevek.server/container
                  :io.pedestal.http/file-path]
                 "target/public")
       (assoc-in [:com.github.bentomi.kodnevek.server/container
                  :com.github.bentomi.kodnevek.server/main-script]
-                "cljs-out/dev-main.js")
-      (assoc-in [:com.github.bentomi.kodnevek.server/container
-                 :io.pedestal.http/secure-headers
-                 :content-security-policy-settings]
-                "")))
+                "cljs-out/dev-main.js")))

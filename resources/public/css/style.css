@@ -28,6 +28,7 @@ table.board td {
     height: 100%;
     width: 100%;
     backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
 }
 .card__face--back {
     transform: rotateY(180deg);

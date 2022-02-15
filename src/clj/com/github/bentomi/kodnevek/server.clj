@@ -28,7 +28,21 @@
       resp/response
       (resp/content-type "text/html; charset=utf-8")))
 
-(defn- main-page [config app-attrs]
+(defn- csp [request]
+  (let [host (:server-name request)
+        port (or (get-in request [:headers "x-forwarded-port"])
+                 (:server-port request))
+        http-scheme (or (get-in request [:headers "x-forwarded-proto"])
+                        (name (:scheme request)))
+        ws-scheme (if (= "https" http-scheme)
+                    "wss"
+                    "ws")
+        http-url (str http-scheme "://" host ":" port)
+        ws-url (str ws-scheme "://" host ":" port)]
+    (format "default-src 'self'; script-src %s; connect-src %s %s"
+            http-url http-url ws-url)))
+
+(defn- main-page [config request app-attrs]
   (-> (hpage/html5
        [:head
         [:meta {:charset "UTF-8"}]
@@ -37,13 +51,17 @@
         [:div#app app-attrs]
         (hpage/include-js (::main-script config))])
       resp/response
-      (resp/content-type "text/html; charset=utf-8")))
+      (resp/content-type "text/html; charset=utf-8")
+      (resp/header "Content-Security-Policy"
+                   (if (::dev-mode? config)
+                     ""
+                     (csp request)))))
 
-(defn- index [config _request]
-  (main-page config {}))
+(defn- index [config request]
+  (main-page config request {}))
 
 (defn- index-with-id [config attr request]
-  (main-page config {attr (get-in request [:query-params :id])}))
+  (main-page config request {attr (get-in request [:query-params :id])}))
 
 (defn- get-languages [config _request]
   (let [wp (::word-provider config)]
@@ -101,9 +119,6 @@
 (defn- create-server [config]
   (-> {::http/routes (routes config)
        ::http/mime-types mime/default-mime-types
-       ::http/secure-headers
-       {:content-security-policy-settings
-        "object-src 'none'; default-src 'self'"}
        ::http/container-options
        {:context-configurator
         #(-> %
