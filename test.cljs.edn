@@ -1,4 +1,5 @@
-^{:launch-js ["/opt/google/chrome/chrome" "--headless" "--disable-gpu"
+^{:launch-js ["/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
+              "--headless" "--disable-gpu" "--crash-dumps-dir=/tmp"
               "--repl" :open-url]
  :ring-server-options {:port 9501}}
 {:main com.github.bentomi.kodnevek.test-runner}
