@@ -1,43 +1,43 @@
-{:deps {org.clojure/clojure {:mvn/version "1.10.3"}
-        io.pedestal/pedestal.service {:mvn/version "0.5.9"}
-        io.pedestal/pedestal.jetty {:mvn/version "0.5.9"}
-        io.pedestal/pedestal.route {:mvn/version "0.5.9"}
+{:deps {org.clojure/clojure {:mvn/version "1.11.0-beta1"}
+        io.pedestal/pedestal.service {:mvn/version "0.5.10"}
+        io.pedestal/pedestal.jetty {:mvn/version "0.5.10"}
+        io.pedestal/pedestal.route {:mvn/version "0.5.10"}
         environ/environ {:mvn/version "1.2.0"}
         hiccup/hiccup {:mvn/version "1.0.5"}
         integrant/integrant {:mvn/version "0.8.0"}
-        metosin/jsonista {:mvn/version "0.3.3"}
+        metosin/jsonista {:mvn/version "0.3.5"}
         medley/medley {:mvn/version  "1.3.0"}
-        com.github.seancorfield/next.jdbc {:mvn/version "1.2.674"}
-        com.zaxxer/HikariCP {:mvn/version "5.0.0"}
-        org.postgresql/postgresql {:mvn/version "42.2.23"}
-        ch.qos.logback/logback-classic {:mvn/version "1.2.4"}
+        com.github.seancorfield/next.jdbc {:mvn/version "1.2.772"}
+        com.zaxxer/HikariCP {:mvn/version "5.0.1"}
+        org.postgresql/postgresql {:mvn/version "42.3.3"}
+        ch.qos.logback/logback-classic {:mvn/version "1.2.10"}
         org.slf4j/slf4j-api {:mvn/version "1.7.32"}
-        org.slf4j/jul-to-slf4j {:mvn/version "1.7.32"}
-        org.slf4j/jcl-over-slf4j {:mvn/version "1.7.32"}
-        org.slf4j/log4j-over-slf4j {:mvn/version "1.7.32"}
-        org.clojure/tools.logging {:mvn/version "1.1.0"}}
+        org.slf4j/jul-to-slf4j {:mvn/version "1.7.36"}
+        org.slf4j/jcl-over-slf4j {:mvn/version "1.7.36"}
+        org.slf4j/log4j-over-slf4j {:mvn/version "1.7.36"}
+        org.clojure/tools.logging {:mvn/version "1.2.4"}}
  :paths ["src/clj" "src/cljc" "resources"]
  :aliases {:cljs {:extra-deps
-                  {org.clojure/clojurescript {:mvn/version "1.10.844"}
-                   day8.re-frame/http-fx {:mvn/version "0.1.6"}
-                   re-frame/re-frame {:mvn/version "1.2.0"}
-                   reagent/reagent {:mvn/version "1.0.0"}}
+                  {org.clojure/clojurescript {:mvn/version "1.10.879"}
+                   day8.re-frame/http-fx {:mvn/version "0.2.4"}
+                   re-frame/re-frame {:mvn/version "1.3.0-rc2"}
+                   reagent/reagent {:mvn/version "1.1.0"}
+                   cljsjs/react {:mvn/version "17.0.2-0"}
+                   cljsjs/react-dom {:mvn/version "17.0.2-0"}}
                   :extra-paths ["src/cljs"]}
            :dev {:extra-deps
                  {org.clojure/java.classpath {:mvn/version "1.0.0"}
                   integrant/repl {:mvn/version "0.3.2"}
-                  binaryage/devtools {:mvn/version "1.0.3"}
-                  com.h2database/h2 {:mvn/version "1.4.200"}
-                  vlaaad/reveal {:mvn/version "1.3.209"}}
+                  binaryage/devtools {:mvn/version "1.0.4"}
+                  com.h2database/h2 {:mvn/version "2.1.210"}}
                  :extra-paths ["dev"]}
            :test {:extra-paths ["test/clj" "test/cljc" "test/cljs"]
                   :extra-deps
-                  {org.clojure/test.check {:mvn/version "1.1.0"}
-                   com.gfredericks/test.chuck {:mvn/version "0.2.11"}
-                   com.h2database/h2 {:mvn/version "1.4.200"}}}
+                  {org.clojure/test.check {:mvn/version "1.1.1"}
+                   com.gfredericks/test.chuck {:mvn/version "0.2.13"}
+                   com.h2database/h2 {:mvn/version "2.1.210"}}}
            :test-run {:extra-deps {io.github.cognitect-labs/test-runner
-                                   {:git/url "https://github.com/cognitect-labs/test-runner.git"
-                                    :sha "9e35c979860c75555adaff7600070c60004a0f44"}}
+                                   {:git/tag "v0.5.0" :git/sha "b3fd0d2"}}
                       :main-opts ["-m" "cognitect.test-runner"]
                       :exec-fn cognitect.test-runner.api/test}
            :cloverage {:extra-deps {cloverage/cloverage {:mvn/version "1.2.2"}}
@@ -49,7 +49,7 @@
            :test-cljs-run {:main-opts ["-m" "figwheel.main"
                                        "-co" "test.cljs.edn"
                                        "-m" "com.github.bentomi.kodnevek.test-runner"]}
-           :uberjar {:replace-deps {com.github.seancorfield/depstar {:mvn/version "2.0.216"}}
+           :uberjar {:replace-deps {com.github.seancorfield/depstar {:mvn/version "2.1.303"}}
                      :exec-fn hf.depstar/uberjar
                      :exec-args {:jar "target/kodnevek.jar"
                                  :main-class com.github.bentomi.kodnevek.main
@@ -57,7 +57,7 @@
                                  :aot true
                                  :exclude ["com/github/bentomi/.*~"
                                            "com/github/bentomi/.*\\.clj"]}}
-           :reveal {:extra-deps {vlaaad/reveal {:mvn/version "1.3.209"}}
+           :reveal {:extra-deps {vlaaad/reveal {:mvn/version "1.3.265"}}
                     :ns-default vlaaad.reveal
                     :exec-fn repl}}
  :mvn/repos {"central" {:url "https://repo1.maven.org/maven2/"}
